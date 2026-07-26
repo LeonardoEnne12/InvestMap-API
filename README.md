@@ -20,8 +20,8 @@ InvestMap-API is a backend API built with **FastAPI** for investment tracking an
 InvestMap-API/
 ├── app/
 │   ├── api/
-│   │   └── v1/
-│   │       └── excel.py       # Excel upload endpoints (POST /upload-excel)
+│   │   ├── __init__.py        # API router aggregation
+│   │   └── excel.py           # Excel upload endpoints (POST /upload-excel)
 │   ├── domain/
 │   │   └── excel_models.py    # Data models & response schemas
 │   ├── parsers/
@@ -48,6 +48,10 @@ Make sure you have **Python 3.10+** installed.
 ### 2. Create and Activate Virtual Environment
 
 ```bash
+# Windows (Git Bash)
+python -m venv venv
+source venv/Scripts/activate
+
 # Windows (PowerShell)
 python -m venv venv
 .\venv\Scripts\Activate.ps1

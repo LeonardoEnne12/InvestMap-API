@@ -20,10 +20,8 @@ InvestMap-API/
 │   ├── __init__.py
 │   ├── main.py               # Main FastAPI entrypoint & router configuration
 │   ├── api/
-│   │   ├── __init__.py
-│   │   └── v1/
-│   │       ├── __init__.py
-│   │       └── excel.py       # Excel upload routes (POST /upload-excel)
+│   │   ├── __init__.py        # API router aggregation & export
+│   │   └── excel.py           # Excel upload routes (POST /upload-excel)
 │   ├── domain/
 │   │   ├── __init__.py
 │   │   └── excel_models.py # Pydantic schemas (ExcelUploadResponse, SheetSummary)
@@ -54,6 +52,7 @@ InvestMap-API/
 ---
 
 ## 📝 Recent Activity Log
+- **2026-07-26:** Refactored `app/api/` to flatten structure (removed `v1` subdirectory), exposing `excel.py` routes directly via `app.api.api_router`.
 - **2026-07-25:** Removed root `main.py` proxy script and upgraded `README.md` with full installation, execution (`uvicorn app.main:app --reload`), testing, and API instructions.
 - **2026-07-25:** Refactored project structure to modular layered architecture (`app/` package with `api/`, `services/`, `parsers/`, `domain/`, `repositories/` and unit test organization under `tests/unit/`).
 - **2026-07-25:** Initialized project structure with FastAPI, `.gitignore`, `.agents/AGENTS.md`, `requirements.txt`, and `POST /upload-excel` endpoint for handling `.xlsx` Excel uploads.

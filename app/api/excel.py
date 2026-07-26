@@ -7,10 +7,7 @@ router = APIRouter(tags=["Excel"])
 
 @router.post("/upload-excel", response_model=ExcelUploadResponse)
 async def upload_excel(file: UploadFile = File(...)) -> ExcelUploadResponse:
-    """
-    Endpoint to receive and validate an Excel file (.xlsx format only).
-    Parses the spreadsheet and returns sheet metadata along with preview content.
-    """
+
     filename = file.filename or ""
     contents = await file.read()
     return ExcelService.process_excel_upload(
