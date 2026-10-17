@@ -49,11 +49,4 @@ InvestMap-API/
 - `GET /health`: System health check.
 - `POST /upload-excel`: Receives a `.xlsx` spreadsheet file, validates format, parses sheet metadata and preview data via `app.services.ExcelService`.
 
----
 
-## 📝 Recent Activity Log
-- **2026-07-30:** Enhanced `app.parsers.excel_parser.ExcelParser` row validation (`_is_valid_data_row`) to filter out empty rows, summary total rows, rows with blank primary asset columns (e.g. "Produto", "Ativo", "Ticker"), and footer rows containing only numeric sums without asset text descriptions. Updated unit tests in `tests/unit/test_excel_parser.py`.
-- **2026-07-26:** Refactored `app/api/` to flatten structure (removed `v1` subdirectory), exposing `excel.py` routes directly via `app.api.api_router`.
-- **2026-07-25:** Removed root `main.py` proxy script and upgraded `README.md` with full installation, execution (`uvicorn app.main:app --reload`), testing, and API instructions.
-- **2026-07-25:** Refactored project structure to modular layered architecture (`app/` package with `api/`, `services/`, `parsers/`, `domain/`, `repositories/` and unit test organization under `tests/unit/`).
-- **2026-07-25:** Initialized project structure with FastAPI, `.gitignore`, `.agents/AGENTS.md`, `requirements.txt`, and `POST /upload-excel` endpoint for handling `.xlsx` Excel uploads.
