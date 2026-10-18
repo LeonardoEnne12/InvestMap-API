@@ -6,8 +6,8 @@
 
 ## 📌 Project Overview
 - **Name:** InvestMap-API
-- **Goal:** Backend API for investment tracking and management. Enables uploading portfolio spreadsheets (Excel `.xlsx`), parsing asset data, and analyzing investment metrics.
-- **Tech Stack:** Python 3.10+, FastAPI, Uvicorn, OpenPyXL, Pydantic.
+- **Goal:** Backend API for investment tracking and management. Enables uploading portfolio spreadsheets (Excel `.xlsx`), parsing asset data, analyzing investment metrics, and persisting portfolio statements and positions into the centralized SQLite database.
+- **Tech Stack:** Python 3.10+, FastAPI, Uvicorn, OpenPyXL, Pydantic, SQLite3 (Standard Library).
 
 ---
 
@@ -18,35 +18,53 @@
 InvestMap-API/
 ├── app/
 │   ├── __init__.py
-│   ├── main.py               # Main FastAPI entrypoint & router configuration
-│   ├── api/
-│   │   ├── __init__.py        # API router aggregation & export
-│   │   └── excel.py           # Excel upload routes (POST /upload-excel)
-│   ├── domain/
+│   ├── main.py                        # Main FastAPI entrypoint & router configuration
+│   ├── core/
 │   │   ├── __init__.py
-│   │   └── excel_models.py # Pydantic schemas (ExcelUploadResponse, SheetSummary)
+│   │   └── config.py                  # App configuration & DATABASE_PATH resolver (.env loader)
+│   ├── api/
+│   │   ├── __init__.py                # API router aggregation & export
+│   │   └── excel.py                   # Excel upload routes (POST /upload-excel)
+│   ├── domain/
+│   │   ├── __init__.py                # Domain models export
+│   │   ├── db_models.py               # Statement and Position Pydantic models
+│   │   └── excel_models.py            # Pydantic schemas (ExcelUploadResponse, SheetSummary)
 │   ├── parsers/
 │   │   ├── __init__.py
-│   │   └── excel_parser.py # openpyxl spreadsheet parsing service
+│   │   └── excel_parser.py            # openpyxl spreadsheet parsing service
 │   ├── services/
 │   │   ├── __init__.py
-│   │   └── excel_service.py# Excel processing business service
+│   │   └── excel_service.py           # Excel processing business service
 │   └── repositories/
-│       └── __init__.py        # Data access repository interfaces & storage logic
+│       ├── __init__.py                # Repository exports
+│       ├── database.py                # SQLite connection manager, get_db, & check_db_connection
+│       ├── statement_repository.py    # SQL-First CRUD queries for statements
+│       └── position_repository.py     # SQL-First CRUD queries for positions
 ├── tests/
 │   └── unit/
-│       ├── test_excel_parser.py # Unit tests for parser
-│       └── test_excel_api.py    # Integration tests for upload endpoints
+│       ├── test_excel_parser.py       # Unit tests for parser
+│       └── test_excel_api.py          # Integration tests for upload endpoints
 ├── .agents/
-│   └── AGENTS.md             # Project context & AI memory (this file)
-├── .gitignore                # Git ignore rules
-├── requirements.txt          # Python dependencies
-└── README.md                 # Project documentation
+│   └── AGENTS.md                      # Project context & AI memory (this file)
+├── .env.example                       # Example environment variables (DATABASE_PATH)
+├── .gitignore                         # Git ignore rules
+├── requirements.txt                   # Python dependencies
+└── README.md                          # Project documentation
 ```
+
+### Environment Variables
+- `DATABASE_PATH`: Path to the SQLite database file. Defaults to `../InvestMap-DB/investmap.db` (resolved relative to `InvestMap-API`). Can be configured in `.env`.
+
+### Database & Repository Conventions (SQL-First)
+- **Integration with InvestMap-DB:** Consumes the SQLite database initialized externally from `InvestMap-DB/schema.sql`.
+- **No ORM DDL:** Never execute `CREATE TABLE` or auto-generate schema from Python.
+- **Connection Management:** `app.repositories.database.get_db_connection()` context manager ensures:
+  - `PRAGMA foreign_keys = ON;` is executed on every connection.
+  - `conn.row_factory = sqlite3.Row` for key-based column access.
+  - Automatic commit on normal return and rollback on exceptions.
+- **Repository Pattern:** Pure parameterized SQL (`?`) statements located in `StatementRepository` and `PositionRepository`, mapping rows into Pydantic models (`Statement`, `Position`).
 
 ### Active Endpoints
 - `GET /`: Health check / welcome message.
-- `GET /health`: System health check.
+- `GET /health`: System and database connectivity check (returns status `"ok"` or `"degraded"`, and database details).
 - `POST /upload-excel`: Receives a `.xlsx` spreadsheet file, validates format, parses sheet metadata and preview data via `app.services.ExcelService`.
-
-

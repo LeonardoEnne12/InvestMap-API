@@ -1,6 +1,6 @@
 # InvestMap-API 🚀
 
-InvestMap-API is a backend API built with **FastAPI** for investment tracking and portfolio management. It enables uploading investment portfolio spreadsheets (Excel `.xlsx`), parsing asset data, and analyzing metrics.
+InvestMap-API is a backend API built with **FastAPI** for investment tracking and portfolio management. It enables uploading investment portfolio spreadsheets (Excel `.xlsx`), parsing asset data, analyzing metrics, and persisting statement and position records to the centralized SQLite database.
 
 ---
 
@@ -11,6 +11,7 @@ InvestMap-API is a backend API built with **FastAPI** for investment tracking an
 - **Uvicorn** (ASGI Server)
 - **OpenPyXL** (Spreadsheet Parsing)
 - **Pydantic** (Data Validation & Schemas)
+- **SQLite3** (Standard Library, SQL-First connection)
 
 ---
 
@@ -20,21 +21,33 @@ InvestMap-API is a backend API built with **FastAPI** for investment tracking an
 InvestMap-API/
 ├── app/
 │   ├── api/
-│   │   ├── __init__.py        # API router aggregation
-│   │   └── excel.py           # Excel upload endpoints (POST /upload-excel)
+│   │   ├── __init__.py            # API router aggregation
+│   │   └── excel.py               # Excel upload endpoints (POST /upload-excel)
+│   ├── core/
+│   │   ├── __init__.py
+│   │   └── config.py              # Application configuration & DATABASE_PATH resolver
 │   ├── domain/
-│   │   └── excel_models.py    # Data models & response schemas
+│   │   ├── __init__.py            # Domain models export
+│   │   ├── db_models.py           # Statement and Position Pydantic models
+│   │   └── excel_models.py        # Data models & response schemas
 │   ├── parsers/
-│   │   └── excel_parser.py    # Excel parsing logic (openpyxl)
-│   ├── repositories/          # Data persistence layer
+│   │   ├── __init__.py
+│   │   └── excel_parser.py        # Excel parsing logic (openpyxl)
+│   ├── repositories/              # SQL-First data persistence layer
+│   │   ├── __init__.py            # Repository exports
+│   │   ├── database.py            # SQLite connection manager & health checks
+│   │   ├── statement_repository.py# Statement CRUD queries
+│   │   └── position_repository.py # Position CRUD queries
 │   ├── services/
-│   │   └── excel_service.py   # Business logic layer
-│   └── main.py                # FastAPI application entrypoint
+│   │   ├── __init__.py
+│   │   └── excel_service.py       # Business logic layer
+│   └── main.py                    # FastAPI application entrypoint
 ├── tests/
-│   └── unit/                  # Unit and integration test suite
-├── test_app.py                # Test runner script
-├── requirements.txt           # Dependency requirements
-└── README.md                  # Project documentation
+│   └── unit/                      # Unit and integration test suite
+├── test_app.py                    # Test runner script
+├── .env.example                   # Example environment variables
+├── requirements.txt               # Dependency requirements
+└── README.md                      # Project documentation
 ```
 
 ---
@@ -65,6 +78,28 @@ source venv/bin/activate
 
 ```bash
 pip install -r requirements.txt
+```
+
+### 4. Database Setup & Configuration
+
+InvestMap-API connects to the SQLite database managed by **InvestMap-DB**. By default, it expects the database at:
+```text
+../InvestMap-DB/investmap.db
+```
+
+To configure a custom database path, copy `.env.example` to `.env` and set `DATABASE_PATH`:
+```bash
+cp .env.example .env
+```
+
+```env
+DATABASE_PATH=../InvestMap-DB/investmap.db
+```
+
+Make sure the database tables are initialized before running the API:
+```bash
+# From InvestMap-DB directory
+python init_db.py
 ```
 
 ---
@@ -111,5 +146,5 @@ python -m unittest discover tests/unit
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `GET` | `/` | Root welcome message |
-| `GET` | `/health` | Health check endpoint |
+| `GET` | `/health` | System and database connectivity check (`ok` or `degraded`) |
 | `POST` | `/upload-excel` | Upload and parse `.xlsx` portfolio spreadsheet |

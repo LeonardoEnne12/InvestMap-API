@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import api_router
+from app.repositories import check_db_connection
 
 app = FastAPI(
     title="InvestMap API",
@@ -30,7 +31,12 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    db_status = check_db_connection()
+    status_str = "ok" if db_status.get("connected") else "degraded"
+    return {
+        "status": status_str,
+        "database": db_status
+    }
 
 
 if __name__ == "__main__":
