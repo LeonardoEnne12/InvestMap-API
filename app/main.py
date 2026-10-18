@@ -5,7 +5,7 @@ from app.repositories import check_db_connection
 
 app = FastAPI(
     title="InvestMap API",
-    description="API for processing investment files and spreadsheet data",
+    description="API for investment portfolio management and tracking",
     version="0.1.0"
 )
 

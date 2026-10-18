@@ -1,6 +1,6 @@
 # InvestMap-API 🚀
 
-InvestMap-API is a backend API built with **FastAPI** for investment tracking and portfolio management. It enables uploading investment portfolio spreadsheets (Excel `.xlsx`), parsing asset data, analyzing metrics, and persisting statement and position records to the centralized SQLite database.
+InvestMap-API is a backend API built with **FastAPI** for investment tracking and portfolio management. It manages portfolio statements and positions, persisting records to the centralized SQLite database.
 
 ---
 
@@ -9,7 +9,6 @@ InvestMap-API is a backend API built with **FastAPI** for investment tracking an
 - **Python 3.10+**
 - **FastAPI** (Web Framework)
 - **Uvicorn** (ASGI Server)
-- **OpenPyXL** (Spreadsheet Parsing)
 - **Pydantic** (Data Validation & Schemas)
 - **SQLite3** (Standard Library, SQL-First connection)
 
@@ -21,29 +20,26 @@ InvestMap-API is a backend API built with **FastAPI** for investment tracking an
 InvestMap-API/
 ├── app/
 │   ├── api/
-│   │   ├── __init__.py            # API router aggregation
-│   │   └── excel.py               # Excel upload endpoints (POST /upload-excel)
+│   │   └── __init__.py            # API router aggregation
 │   ├── core/
 │   │   ├── __init__.py
 │   │   └── config.py              # Application configuration & DATABASE_PATH resolver
 │   ├── domain/
 │   │   ├── __init__.py            # Domain models export
-│   │   ├── db_models.py           # Statement and Position Pydantic models
-│   │   └── excel_models.py        # Data models & response schemas
+│   │   └── db_models.py           # Statement and Position Pydantic models
 │   ├── parsers/
-│   │   ├── __init__.py
-│   │   └── excel_parser.py        # Excel parsing logic (openpyxl)
+│   │   └── __init__.py            # Data parsing & ingestion interfaces
 │   ├── repositories/              # SQL-First data persistence layer
 │   │   ├── __init__.py            # Repository exports
 │   │   ├── database.py            # SQLite connection manager & health checks
 │   │   ├── statement_repository.py# Statement CRUD queries
 │   │   └── position_repository.py # Position CRUD queries
 │   ├── services/
-│   │   ├── __init__.py
-│   │   └── excel_service.py       # Business logic layer
+│   │   └── __init__.py            # Business logic layer
 │   └── main.py                    # FastAPI application entrypoint
 ├── tests/
 │   └── unit/                      # Unit and integration test suite
+│       └── test_api.py            # Tests for API endpoints
 ├── test_app.py                    # Test runner script
 ├── .env.example                   # Example environment variables
 ├── requirements.txt               # Dependency requirements
@@ -147,4 +143,3 @@ python -m unittest discover tests/unit
 | :--- | :--- | :--- |
 | `GET` | `/` | Root welcome message |
 | `GET` | `/health` | System and database connectivity check (`ok` or `degraded`) |
-| `POST` | `/upload-excel` | Upload and parse `.xlsx` portfolio spreadsheet |

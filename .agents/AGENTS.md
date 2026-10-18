@@ -6,8 +6,8 @@
 
 ## 📌 Project Overview
 - **Name:** InvestMap-API
-- **Goal:** Backend API for investment tracking and management. Enables uploading portfolio spreadsheets (Excel `.xlsx`), parsing asset data, analyzing investment metrics, and persisting portfolio statements and positions into the centralized SQLite database.
-- **Tech Stack:** Python 3.10+, FastAPI, Uvicorn, OpenPyXL, Pydantic, SQLite3 (Standard Library).
+- **Goal:** Backend API for investment portfolio management and tracking. Provides endpoints for statement/position management and analytics, persisting records into the centralized SQLite database.
+- **Tech Stack:** Python 3.10+, FastAPI, Uvicorn, Pydantic, SQLite3 (Standard Library).
 
 ---
 
@@ -23,18 +23,14 @@ InvestMap-API/
 │   │   ├── __init__.py
 │   │   └── config.py                  # App configuration & DATABASE_PATH resolver (.env loader)
 │   ├── api/
-│   │   ├── __init__.py                # API router aggregation & export
-│   │   └── excel.py                   # Excel upload routes (POST /upload-excel)
+│   │   └── __init__.py                # API router aggregation & export
 │   ├── domain/
 │   │   ├── __init__.py                # Domain models export
-│   │   ├── db_models.py               # Statement and Position Pydantic models
-│   │   └── excel_models.py            # Pydantic schemas (ExcelUploadResponse, SheetSummary)
+│   │   └── db_models.py               # Statement and Position Pydantic models
 │   ├── parsers/
-│   │   ├── __init__.py
-│   │   └── excel_parser.py            # openpyxl spreadsheet parsing service
+│   │   └── __init__.py                # Data parsing & ingestion interfaces
 │   ├── services/
-│   │   ├── __init__.py
-│   │   └── excel_service.py           # Excel processing business service
+│   │   └── __init__.py                # Business logic services
 │   └── repositories/
 │       ├── __init__.py                # Repository exports
 │       ├── database.py                # SQLite connection manager, get_db, & check_db_connection
@@ -42,8 +38,7 @@ InvestMap-API/
 │       └── position_repository.py     # SQL-First CRUD queries for positions
 ├── tests/
 │   └── unit/
-│       ├── test_excel_parser.py       # Unit tests for parser
-│       └── test_excel_api.py          # Integration tests for upload endpoints
+│       └── test_api.py                # Unit and integration tests for API endpoints
 ├── .agents/
 │   └── AGENTS.md                      # Project context & AI memory (this file)
 ├── .env.example                       # Example environment variables (DATABASE_PATH)
@@ -67,4 +62,3 @@ InvestMap-API/
 ### Active Endpoints
 - `GET /`: Health check / welcome message.
 - `GET /health`: System and database connectivity check (returns status `"ok"` or `"degraded"`, and database details).
-- `POST /upload-excel`: Receives a `.xlsx` spreadsheet file, validates format, parses sheet metadata and preview data via `app.services.ExcelService`.

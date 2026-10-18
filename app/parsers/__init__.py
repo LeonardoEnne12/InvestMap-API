@@ -1,3 +1,5 @@
-from app.parsers.excel_parser import ExcelParser
+"""
+Parsers Layer - Data parsing and extraction services.
+"""
 
-__all__ = ["ExcelParser"]
+__all__ = []
